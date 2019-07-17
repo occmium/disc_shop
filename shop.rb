@@ -53,6 +53,6 @@ if cart.list.empty?
   puts "Приходите к нам ещё, после обеда у нас будут новинки!"
 else
   puts "Вы купили: \n\n"
-  cart.each_item_count.each_with_index {|string, index| puts "#{index + 1}.  #{string}"}
+  cart.to_print
   puts "\nС Вас — #{cart.sum} руб. Спасибо за покупки!"
 end

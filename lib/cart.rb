@@ -10,7 +10,7 @@ class Cart
   attr_accessor :list, :sum, :buy
 
   def initialize
-    @list = []
+    @list = {}
     @sum = 0
   end
 
@@ -18,7 +18,11 @@ class Cart
     if (1..assortment.to_a.length).include?(choice)
       @buy = assortment.to_a[choice - 1]
       available = @buy.stock - 1
-      @list << @buy
+      if @list.key?(@buy)
+        @list[@buy] += 1
+      else
+        @list[@buy] = 1
+      end
       @sum += @buy.price
       @buy.stock = available
       assortment.to_a.delete_at(choice - 1) if available < 1
@@ -26,21 +30,11 @@ class Cart
     end
   end
 
-  def each_item_count
-      temp_hash = {}
-      list_for_print = []
-
-      @list.each do |instance|
-        if temp_hash.key?(instance)
-          temp_hash[instance] += 1
-        else
-          temp_hash[instance] = 1
-        end
-      end
-      temp_hash.each do |instance, value|
-        list_for_print << "#{instance.w_out_rest} - #{value}шт"
-      end
-
-      list_for_print
+  def to_print
+    count = 1
+    @list.each do |instance, value|
+      puts "#{count}. #{instance.w_out_rest} - #{value}шт"
+      count += 1
+    end
   end
 end
