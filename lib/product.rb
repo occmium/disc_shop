@@ -30,8 +30,4 @@ class Product
     @price = parameters[:price] if parameters[:price]
     @stock = parameters[:stock] if parameters[:stock]
   end
-
-  def self.from_file(current_file)
-    raise
-  end
 end

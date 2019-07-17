@@ -20,14 +20,10 @@ require_relative 'lib/book'
 require_relative 'lib/movie'
 require_relative 'lib/disc'
 require_relative 'lib/product_collection'
+require_relative 'lib/cart'
 
 product_collection = ProductCollection.from_dir(File.dirname(__FILE__) + '/data')
-
-begin
-  Product.from_file("./data/books/idiot.txt")
-rescue
-  puts "NotImplementedError Product.from_file"
-end
+cart = Cart.new
 
 puts "\nДобро пожаловать!\n\nХотите отсортировать список товаров?" \
   "\n0: по умолчанию" \
@@ -43,42 +39,20 @@ user_input = STDIN.gets.to_i
 puts "\nВыбирайте! Что хотите купить:\n\n0: хочу выйти из магазина"
 product_collection.sort!(user_input)
 product_collection.to_a.each_with_index {|pos, index| puts "#{index + 1}: #{pos}"}
-
 user_choice = STDIN.gets.to_i
-basket = []
-sum = 0
-until user_choice == 0
-  if (1..product_collection.to_a.length).include?(user_choice)
-    buy = product_collection.to_a[user_choice - 1]
-    available = buy.stock - 1
-    basket << buy
-    sum += buy.price
-    buy.stock = available
-    product_collection.to_a.delete_at(user_choice - 1) if available < 1
-    puts "\nВы выбрали #{buy.w_out_rest}"
-    puts "Всего товаров на сумму:  #{sum} руб."
-  end
 
+until user_choice == 0
+  cart.add(user_choice, product_collection)
+  puts "\nВы выбрали #{cart.buy}\nВсего товаров на сумму:  #{cart.sum} руб."
   puts "\nМожет быть Вы хотите ещё что-нибудь купить ?\n0: ничего не хочу, выйти"
   product_collection.to_a.each_with_index {|pos, index| puts "#{index + 1}: #{pos}"}
   user_choice = STDIN.gets.to_i
 end
 
-if !basket.empty?
-  temp_hash = {}
-  basket.each do |instance|
-    if temp_hash.key?(instance)
-      temp_hash[instance] += 1
-    else
-      temp_hash[instance] = 1
-    end
-  end
-  for_print = []
-  temp_hash.each {|instance, value| for_print << "#{instance.w_out_rest} - #{value}шт"}
-
-  puts "Вы купили: \n\n"
-  for_print.each_with_index {|string, index| puts "#{index + 1}.  #{string}"}
-  puts "\nС Вас — #{sum} руб. Спасибо за покупки!"
-else
+if cart.list.empty?
   puts "Приходите к нам ещё, после обеда у нас будут новинки!"
+else
+  puts "Вы купили: \n\n"
+  cart.each_item_count.each_with_index {|string, index| puts "#{index + 1}.  #{string}"}
+  puts "\nС Вас — #{cart.sum} руб. Спасибо за покупки!"
 end
