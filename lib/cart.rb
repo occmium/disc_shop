@@ -9,32 +9,32 @@
 class Cart
   attr_accessor :list, :sum, :buy
 
-  def initialize
+  def initialize(goods)
+    @goods = goods.to_a
     @list = {}
     @sum = 0
   end
 
-  def add(choice, assortment)
-    if (1..assortment.to_a.length).include?(choice)
-      @buy = assortment.to_a[choice - 1]
+  def add(choice)
+    if (1..@goods.length).include?(choice)
+      @buy = @goods[choice - 1]
       available = @buy.stock - 1
-      if @list.key?(@buy)
-        @list[@buy] += 1
-      else
-        @list[@buy] = 1
-      end
+      @list[@buy] ||= 0
+      @list[@buy] += 1
       @sum += @buy.price
       @buy.stock = available
-      assortment.to_a.delete_at(choice - 1) if available < 1
+      @goods.to_a.delete_at(choice - 1) if available < 1
       @buy.w_out_rest
     end
   end
 
-  def to_print
+  def to_s
     count = 1
+    list = []
     @list.each do |instance, value|
-      puts "#{count}. #{instance.w_out_rest} - #{value}шт"
+      list << "#{count}. #{instance.w_out_rest} - #{value}шт"
       count += 1
     end
+    list.join("\n")
   end
 end

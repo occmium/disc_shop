@@ -23,7 +23,7 @@ require_relative 'lib/product_collection'
 require_relative 'lib/cart'
 
 product_collection = ProductCollection.from_dir(File.dirname(__FILE__) + '/data')
-cart = Cart.new
+cart = Cart.new(product_collection)
 
 puts "\nДобро пожаловать!\n\nХотите отсортировать список товаров?" \
   "\n0: по умолчанию" \
@@ -42,7 +42,7 @@ product_collection.to_a.each_with_index {|pos, index| puts "#{index + 1}: #{pos}
 user_choice = STDIN.gets.to_i
 
 until user_choice == 0
-  cart.add(user_choice, product_collection)
+  cart.add(user_choice)
   puts "\nВы выбрали #{cart.buy}\nВсего товаров на сумму:  #{cart.sum} руб."
   puts "\nМожет быть Вы хотите ещё что-нибудь купить ?\n0: ничего не хочу, выйти"
   product_collection.to_a.each_with_index {|pos, index| puts "#{index + 1}: #{pos}"}
@@ -52,7 +52,6 @@ end
 if cart.list.empty?
   puts "Приходите к нам ещё, после обеда у нас будут новинки!"
 else
-  puts "Вы купили: \n\n"
-  cart.to_print
+  puts "Вы купили: \n\n#{cart}"
   puts "\nС Вас — #{cart.sum} руб. Спасибо за покупки!"
 end
